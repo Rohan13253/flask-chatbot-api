@@ -1,9 +1,9 @@
 Flask==3.1.0
 requests==2.32.3
 transformers==4.48.3
-torch==2.5.1+cu124
-torchaudio==2.5.1+cu124
-torchvision==0.20.1+cu124
+torch
+torchaudio
+torchvision
 sentence-transformers==3.4.1
 nltk==3.9.1
 pandas==2.2.2
