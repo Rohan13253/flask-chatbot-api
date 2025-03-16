@@ -1,4 +1,4 @@
-import wikipedia
+import wikipediaapi
 import requests
 import datetime
 import pytz
