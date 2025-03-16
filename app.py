@@ -3,12 +3,9 @@ import os  # For reading the PORT environment variable
 
 app = Flask(__name__)
 
-# Define chatbot responses
-chatbot_responses = {
-    "hello": "Hi there! How can I help you?",
-    "how are you": "I'm just a bot, but I'm doing great! How about you?",
-    "bye": "Goodbye! Have a great day!"
-}
+# Load chatbot responses from JSON file
+with open("chatbot_data.json", "r") as file:
+    chatbot_data = json.load(file)
 
 # ✅ Home route to prevent 404 errors
 @app.route("/")
