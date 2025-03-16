@@ -2,7 +2,7 @@ import requests
 import datetime
 
 # OpenWeather API (Get API Key from https://openweathermap.org/api)
-OPENWEATHER_API_KEY = "your_openweather_api_key"
+OPENWEATHER_API_KEY = "5ad3ec78c422edd88c77f4df954bfc61"
 
 # ChatGPT API (Get API Key from https://openai.com/)
 OPENAI_API_KEY = "your_openai_api_key"
