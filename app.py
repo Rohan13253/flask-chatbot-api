@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import json
 from rapidfuzz import process, fuzz
 from api_helpers import get_weather  # Import the weather function
+import wikipediaapi
 
 app = Flask(__name__)
 
@@ -18,6 +19,31 @@ def get_best_match(user_message):
     if score >= 80:  # Threshold for similarity
         return chatbot_data[best_match]
     return "Sorry, I don't understand that."
+
+@app.route("/chatbot", methods=["GET"])
+def chatbot():
+    user_message = request.args.get("message", "").lower()
+
+    if "time" in user_message or "date" in user_message:
+        response = get_time_date(user_message)
+    else:
+        response = "I'm not sure about that. Try asking about the time or date!"
+
+    return jsonify({"response": response})
+
+def search_wikipedia(user_message):
+    """Fetches a short summary from Wikipedia."""
+    wiki = wikipediaapi.Wikipedia("en")
+    topic = user_message.replace("who is", "").replace("what is", "").strip()
+
+    if not topic:
+        return "Please specify a topic. Example: 'Who is Albert Einstein?'"
+
+    page = wiki.page(topic)
+    if page.exists():
+        return page.summary[:300] + "..."  # Return first 300 characters
+    else:
+        return f"Sorry, I couldn't find anything about {topic} on Wikipedia."
 
 # 🗣️ Chatbot API
 @app.route("/chatbot", methods=["GET"])
