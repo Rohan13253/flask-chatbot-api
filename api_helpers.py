@@ -1,58 +1,43 @@
+import wikipedia
 import requests
 import datetime
-from datetime import datetime
 import pytz
 
-def get_current_time(timezone="UTC"):
-    """Returns the current time in the specified timezone."""
-    try:
-        tz = pytz.timezone(timezone)
-        now = datetime.now(tz)
-        return now.strftime("%Y-%m-%d %H:%M:%S %Z")
-    except pytz.UnknownTimeZoneError:
-        return "Invalid timezone. Please provide a valid timezone."
-
-# OpenWeather API (Get API Key from https://openweathermap.org/api)
+# OpenWeather API Key
 OPENWEATHER_API_KEY = "5ad3ec78c422edd88c77f4df954bfc61"
 
-# ChatGPT API (Get API Key from https://openai.com/)
-OPENAI_API_KEY = "your_openai_api_key"
+def search_wikipedia(query):
+    """Search Wikipedia and return a short summary."""
+    try:
+        return wikipedia.summary(query, sentences=2)
+    except wikipedia.exceptions.DisambiguationError as e:
+        return f"Multiple results found: {e.options[:5]}... Please be more specific."
+    except wikipedia.exceptions.PageError:
+        return "Sorry, I couldn't find anything on Wikipedia."
+    except Exception as e:
+        return f"An error occurred: {str(e)}"
 
 def get_weather(city):
-    """Fetches weather information using OpenWeather API."""
+    """Fetch weather data from OpenWeather API."""
     url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={OPENWEATHER_API_KEY}&units=metric"
-    response = requests.get(url)
-    data = response.json()
+    try:
+        response = requests.get(url)
+        data = response.json()
+        
+        if data["cod"] == 200:
+            weather = data["weather"][0]["description"].capitalize()
+            temp = data["main"]["temp"]
+            return f"The weather in {city} is {weather} with a temperature of {temp}°C."
+        else:
+            return "Couldn't fetch weather details. Please check the city name."
+    except Exception as e:
+        return f"Error fetching weather: {str(e)}"
 
-    if data.get("cod") != 200:
-        return "Couldn't fetch weather data."
-
-    weather = data["weather"][0]["description"]
-    temp = data["main"]["temp"]
-    return f"The weather in {city} is {weather} with a temperature of {temp}°C."
-
-def search_wikipedia(query):
-    """Fetches a short summary from Wikipedia."""
-    search_term = query.replace("Tell me about", "").replace("Search Wikipedia for", "").strip()
-    url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{search_term}"
-    response = requests.get(url)
-    data = response.json()
-
-    if "extract" in data:
-        return data["extract"]
-    return "Sorry, I couldn't find anything on Wikipedia."
-
-def get_time():
-    """Returns the current time and date."""
-    now = datetime.datetime.now()
-    return f"Current date and time: {now.strftime('%Y-%m-%d %H:%M:%S')}"
-
-def ask_chatgpt(query):
-    """Fetches a response from OpenAI's ChatGPT API."""
-    headers = {"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"}
-    data = {"model": "gpt-4", "messages": [{"role": "user", "content": query}]}
-    response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=data)
-    
-    if response.status_code == 200:
-        return response.json()["choices"][0]["message"]["content"]
-    return "ChatGPT is not available right now."
+def get_current_time():
+    """Returns the current time in IST (Indian Standard Time)."""
+    try:
+        ist = pytz.timezone("Asia/Kolkata")
+        current_time = datetime.datetime.now(ist).strftime("%Y-%m-%d %H:%M:%S")
+        return f"The current time in IST is {current_time}."
+    except Exception as e:
+        return f"Error fetching time: {str(e)}"
