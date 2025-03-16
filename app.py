@@ -6,7 +6,7 @@ from api_helpers import get_weather  # Import the weather function
 app = Flask(__name__)
 
 # Load chatbot responses from JSON
-with open("data/responses.json", "r") as file:
+with open("responses.json", "r") as file:
     chatbot_data = json.load(file)
 
 # 🔍 Function to find the best matching response
