@@ -26,7 +26,7 @@ def home():
 def chatbot():
     user_message = request.args.get("message", "").lower()
     
-    # Check for weather queries
+    # Weather queries
     if "weather" in user_message or "forecast" in user_message:
         city = user_message.split("in")[-1].strip()  # Extract city name
         if city:
@@ -34,16 +34,16 @@ def chatbot():
         else:
             response = "Please specify a city. Example: 'What's the weather in Mumbai?'"
 
-    # Check for Wikipedia search
+    # Wikipedia search
     elif "who is" in user_message or "tell me about" in user_message:
         query = user_message.replace("who is ", "").replace("tell me about ", "").strip()
         response = search_wikipedia(query)
 
-    # Check for current time request
+    # Current time request
     elif "time" in user_message or "date" in user_message:
         response = get_current_time()
 
-    # Use fuzzy matching for general chatbot responses
+    # General chatbot responses
     else:
         response = get_best_match(user_message)
         if response is None:
