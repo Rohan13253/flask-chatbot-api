@@ -1,5 +1,16 @@
 import requests
 import datetime
+from datetime import datetime
+import pytz
+
+def get_current_time(timezone="UTC"):
+    """Returns the current time in the specified timezone."""
+    try:
+        tz = pytz.timezone(timezone)
+        now = datetime.now(tz)
+        return now.strftime("%Y-%m-%d %H:%M:%S %Z")
+    except pytz.UnknownTimeZoneError:
+        return "Invalid timezone. Please provide a valid timezone."
 
 # OpenWeather API (Get API Key from https://openweathermap.org/api)
 OPENWEATHER_API_KEY = "5ad3ec78c422edd88c77f4df954bfc61"
