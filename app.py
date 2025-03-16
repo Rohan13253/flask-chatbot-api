@@ -16,28 +16,38 @@ def get_best_match(user_message):
     
     if score >= 80:  # Set threshold for similarity
         return chatbot_data[best_match]
-    return "Sorry, I can't understand that."
+    return None
+
+@app.route("/")
+def home():
+    return "Welcome to the AI Chatbot API! Use /chatbot?message=your_message"
 
 @app.route("/chatbot", methods=["GET"])
 def chatbot():
     user_message = request.args.get("message", "").lower()
-
-    # Handle weather queries
+    
+    # Check for weather queries
     if "weather" in user_message or "forecast" in user_message:
-        city = user_message.split("in")[-1].strip() if "in" in user_message else ""
-        response = get_weather(city)
+        city = user_message.split("in")[-1].strip()  # Extract city name
+        if city:
+            response = get_weather(city)
+        else:
+            response = "Please specify a city. Example: 'What's the weather in Mumbai?'"
 
-    # Handle Wikipedia queries
-    elif "who is" in user_message or "what is" in user_message:
-        response = search_wikipedia(user_message)
+    # Check for Wikipedia search
+    elif "who is" in user_message or "tell me about" in user_message:
+        query = user_message.replace("who is ", "").replace("tell me about ", "").strip()
+        response = search_wikipedia(query)
 
-    # Handle time requests
-    elif "time" in user_message:
+    # Check for current time request
+    elif "time" in user_message or "date" in user_message:
         response = get_current_time()
 
-    # Default chatbot responses (fuzzy matching)
+    # Use fuzzy matching for general chatbot responses
     else:
         response = get_best_match(user_message)
+        if response is None:
+            response = "Sorry, I don't understand that. Try asking about weather, time, or a famous person!"
 
     return jsonify({"response": response})
 
