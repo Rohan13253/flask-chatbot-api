@@ -31,6 +31,18 @@ def chatbot():
 
     return jsonify({"response": response})
 
+@app.route("/chatbot", methods=["GET"])
+def chatbot():
+    user_message = request.args.get("message", "").lower()
+
+    if "who is" in user_message or "what is" in user_message:
+        response = search_wikipedia(user_message)
+    else:
+        response = "I'm not sure about that. Try asking about a person or topic!"
+
+    return jsonify({"response": response})
+
+
 def search_wikipedia(user_message):
     """Fetches a short summary from Wikipedia."""
     wiki = wikipediaapi.Wikipedia("en")
