@@ -7,14 +7,13 @@ import pytz
 OPENWEATHER_API_KEY = "5ad3ec78c422edd88c77f4df954bfc61"
 
 def search_wikipedia(query):
-    """Search Wikipedia and return a short summary."""
-    try:
-        page = wikipedia.page(query)
-        return page.summary[:300]  # Limit summary to 300 characters
-    except wikipedia.exceptions.DisambiguationError as e:
-        return f"Multiple results found: {', '.join(e.options[:5])}. Please be more specific."
-    except wikipedia.exceptions.PageError:
-        return "Sorry, I couldn't find anything on Wikipedia."
+    """Search Wikipedia using wikipedia-api."""
+    wiki = wikipediaapi.Wikipedia("en")
+    page = wiki.page(query)
+    
+    if page.exists():
+        return page.summary[:300]  # Limit to 300 characters
+    return "Sorry, I couldn't find anything on Wikipedia."
     except Exception as e:
         return f"An error occurred: {str(e)}"
 
